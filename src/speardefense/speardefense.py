@@ -20,6 +20,7 @@ pygame.display.set_caption("Spear Defense!")
 font = pygame.font.Font(None, 28)
 shield_sound = pygame.mixer.Sound("assets/shieldhit.wav")
 hit_sound = pygame.mixer.Sound("assets/playerhit.wav")
+SPEAR_EVENT = pygame.USEREVENT + 1
 
 
 # Sprite Classes
@@ -156,13 +157,17 @@ def play_game():
     player.rect.y = (WINDOW_HEIGHT / 2) - (CENTER_WIDTH / 2)
     all_sprites_list.add(player)
 
-    # Initialize the player's shield class, score, and life total
+    # Initialize the player's shield class, score, life total, and the spear timer
     shield = Shield(RIGHT)
     all_sprites_list.add(shield)
 
     direction = RIGHT
     score = 0
     life = 3
+
+    fire_spear = False
+    spear_timing = 300
+    pygame.time.set_timer(SPEAR_EVENT, spear_timing)
 
     # Main game loop
     while True:
@@ -181,6 +186,8 @@ def play_game():
                     direction = DOWN
                 elif event.key == K_ESCAPE:
                     exit_game()
+            if event.type == SPEAR_EVENT:
+                fire_spear = True
 
         # Change the shield direction and update sprites
         shield.set_direction(direction)
@@ -218,9 +225,11 @@ def play_game():
         text = font.render(life_text, True, WHITE)
         DISPLAY_SURF.blit(text, [WINDOW_WIDTH - font.size(life_text)[0] - 15, text_height])
 
-        chance = random.random()
-        if chance > 0.975:
+        if fire_spear:
             create_spear()
+            fire_spear = False
+            spear_timing = random.randrange(200, 500)
+            pygame.time.set_timer(SPEAR_EVENT, spear_timing)
 
         all_sprites_list.draw(DISPLAY_SURF)
 
@@ -261,7 +270,6 @@ def game_over_screen(score):
         FPS_CLOCK.tick(FPS)
 
 
-# TODO: change to generating spears in set patterns
 def create_spear():
     """ Fire a spear from a random direction. """
     chance = random.random()
