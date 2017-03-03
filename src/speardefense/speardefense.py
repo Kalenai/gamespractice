@@ -47,7 +47,6 @@ class Shield(pygame.sprite.Sprite):
         self.rect = None
         self.set_rect()
 
-
     def set_image(self):
         if self.direction == 'right' or self.direction == 'left':
             self.image = pygame.Surface([CENTER_WIDTH / 2, CENTER_WIDTH])
